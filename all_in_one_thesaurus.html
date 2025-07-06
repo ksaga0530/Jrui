@@ -1,0 +1,790 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>類語辞典</title>
+    <meta name="theme-color" content="#007AFF">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="類語辞典">
+    
+    <!-- インライン アイコン（Base64 エンコード） -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTkyIiBoZWlnaHQ9IjE5MiIgdmlld0JveD0iMCAwIDE5MiAxOTIiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CiAgPHJlY3Qgd2lkdGg9IjE5MiIgaGVpZ2h0PSIxOTIiIHJ4PSIyNCIgZmlsbD0iIzAwN0FGRiIvPgogIDx0ZXh0IHg9Ijk2IiB5PSIxMjAiIGZvbnQtZmFtaWx5PSItYXBwbGUtc3lzdGVtLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjgwIiBmb250LXdlaWdodD0iNjAwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSJ3aGl0ZSI+6L6eLyIsInR5cGUiOiJhcHBsaWNhdGlvbi92bmQuYW50LnJlYWN0In0=">
+    <link rel="apple-touch-icon" href="data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTkyIiBoZWlnaHQ9IjE5MiIgdmlld0JveD0iMCAwIDE5MiAxOTIiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CiAgPHJlY3Qgd2lkdGg9IjE5MiIgaGVpZ2h0PSIxOTIiIHJ4PSIyNCIgZmlsbD0iIzAwN0FGRiIvPgogIDx0ZXh0IHg9Ijk2IiB5PSIxMjAiIGZvbnQtZmFtaWx5PSItYXBwbGUtc3lzdGVtLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjgwIiBmb250LXdlaWdodD0iNjAwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSJ3aGl0ZSI+6L6eLyIsInR5cGUiOiJhcHBsaWNhdGlvbi92bmQuYW50LnJlYWN0In0=">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Display', 'Helvetica Neue', Arial, sans-serif;
+            background: #F2F2F7;
+            color: #000;
+            line-height: 1.4;
+            overflow-x: hidden;
+        }
+        
+        .container {
+            max-width: 390px;
+            margin: 0 auto;
+            min-height: 100vh;
+            background: #fff;
+            position: relative;
+        }
+        
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            padding: 60px 20px 20px;
+            text-align: center;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            border-bottom: 0.5px solid rgba(0, 0, 0, 0.1);
+        }
+        
+        .app-title {
+            font-size: 34px;
+            font-weight: 700;
+            color: #000;
+            margin-bottom: 8px;
+            letter-spacing: -0.5px;
+        }
+        
+        .app-subtitle {
+            font-size: 17px;
+            color: #8E8E93;
+            font-weight: 400;
+        }
+        
+        .search-container {
+            padding: 20px;
+            background: #fff;
+        }
+        
+        .search-bar {
+            position: relative;
+            background: #F2F2F7;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+        
+        .search-input {
+            width: 100%;
+            padding: 12px 16px 12px 44px;
+            border: none;
+            background: transparent;
+            font-size: 17px;
+            color: #000;
+            outline: none;
+            font-weight: 400;
+        }
+        
+        .search-input::placeholder {
+            color: #8E8E93;
+        }
+        
+        .search-icon {
+            position: absolute;
+            left: 16px;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 16px;
+            height: 16px;
+            color: #8E8E93;
+        }
+        
+        .content {
+            padding: 0 20px 100px;
+            background: #fff;
+        }
+        
+        .result-section {
+            margin-bottom: 32px;
+        }
+        
+        .word-header {
+            padding: 24px 0 16px;
+            border-bottom: 0.5px solid #C6C6C8;
+            margin-bottom: 20px;
+        }
+        
+        .searched-word {
+            font-size: 28px;
+            font-weight: 600;
+            color: #000;
+            margin-bottom: 8px;
+            letter-spacing: -0.3px;
+        }
+        
+        .word-count {
+            font-size: 15px;
+            color: #8E8E93;
+            font-weight: 400;
+        }
+        
+        .language-section {
+            margin-bottom: 28px;
+        }
+        
+        .language-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #000;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .language-flag {
+            font-size: 18px;
+        }
+        
+        .words-grid {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        
+        .word-tag {
+            background: #F2F2F7;
+            color: #007AFF;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 16px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: none;
+            outline: none;
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
+        }
+        
+        .word-tag:active {
+            transform: scale(0.95);
+            background: #E5E5EA;
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 60px 20px;
+            color: #8E8E93;
+        }
+        
+        .loading-spinner {
+            width: 24px;
+            height: 24px;
+            border: 2px solid #E5E5EA;
+            border-top: 2px solid #007AFF;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 16px;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 80px 20px;
+            color: #8E8E93;
+        }
+        
+        .empty-icon {
+            font-size: 48px;
+            margin-bottom: 16px;
+            opacity: 0.6;
+        }
+        
+        .empty-title {
+            font-size: 20px;
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #000;
+        }
+        
+        .empty-subtitle {
+            font-size: 15px;
+            line-height: 1.4;
+        }
+        
+        .error-state {
+            background: #FFEBEE;
+            border: 1px solid #FFCDD2;
+            border-radius: 12px;
+            padding: 20px;
+            margin: 20px 0;
+        }
+        
+        .error-title {
+            font-size: 17px;
+            font-weight: 600;
+            color: #D32F2F;
+            margin-bottom: 8px;
+        }
+        
+        .error-message {
+            font-size: 15px;
+            color: #666;
+        }
+        
+        .suggestions {
+            margin-top: 20px;
+        }
+        
+        .suggestions-title {
+            font-size: 17px;
+            font-weight: 600;
+            color: #000;
+            margin-bottom: 12px;
+        }
+        
+        .suggestion-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+        
+        .suggestion-tag {
+            background: #E3F2FD;
+            color: #1976D2;
+            padding: 6px 12px;
+            border-radius: 16px;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        .suggestion-tag:active {
+            transform: scale(0.95);
+            background: #BBDEFB;
+        }
+        
+        .safe-area-bottom {
+            height: env(safe-area-inset-bottom);
+        }
+        
+        .pwa-install-banner {
+            background: #007AFF;
+            color: white;
+            padding: 12px 20px;
+            text-align: center;
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            transform: translateY(100%);
+            transition: transform 0.3s ease;
+        }
+        
+        .pwa-install-banner.show {
+            transform: translateY(0);
+        }
+        
+        .pwa-install-button {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            padding: 8px 16px;
+            border-radius: 8px;
+            margin-left: 12px;
+            cursor: pointer;
+        }
+        
+        @media (prefers-color-scheme: dark) {
+            body {
+                background: #000;
+                color: #fff;
+            }
+            
+            .container {
+                background: #1C1C1E;
+            }
+            
+            .header {
+                background: rgba(28, 28, 30, 0.95);
+                border-bottom-color: rgba(255, 255, 255, 0.1);
+            }
+            
+            .app-title {
+                color: #fff;
+            }
+            
+            .content {
+                background: #1C1C1E;
+            }
+            
+            .search-bar {
+                background: #2C2C2E;
+            }
+            
+            .search-input {
+                color: #fff;
+            }
+            
+            .search-input::placeholder {
+                color: #8E8E93;
+            }
+            
+            .word-header {
+                border-bottom-color: #38383A;
+            }
+            
+            .searched-word {
+                color: #fff;
+            }
+            
+            .language-title {
+                color: #fff;
+            }
+            
+            .word-tag {
+                background: #2C2C2E;
+                color: #0A84FF;
+            }
+            
+            .word-tag:active {
+                background: #3A3A3C;
+            }
+            
+            .empty-title {
+                color: #fff;
+            }
+            
+            .suggestions-title {
+                color: #fff;
+            }
+        }
+        
+        @media (max-width: 430px) {
+            .container {
+                max-width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1 class="app-title">類語辞典</h1>
+            <p class="app-subtitle">日本語WordNet</p>
+        </div>
+        
+        <div class="search-container">
+            <div class="search-bar">
+                <svg class="search-icon" viewBox="0 0 16 16" fill="currentColor">
+                    <path d="M11.742 10.344a6.5 6.5 0 1 0-1.397 1.398h-.001c.03.04.062.078.098.115l3.85 3.85a1 1 0 0 0 1.415-1.414l-3.85-3.85a1.007 1.007 0 0 0-.115-.1zM12 6.5a5.5 5.5 0 1 1-11 0 5.5 5.5 0 0 1 11 0z"/>
+                </svg>
+                <input 
+                    type="text" 
+                    class="search-input" 
+                    placeholder="単語を入力してください"
+                    id="searchInput"
+                    autocomplete="off"
+                    autocorrect="off"
+                    autocapitalize="off"
+                    spellcheck="false"
+                >
+            </div>
+        </div>
+        
+        <div class="content" id="content">
+            <div class="empty-state">
+                <div class="empty-icon">📚</div>
+                <div class="empty-title">類語を検索</div>
+                <div class="empty-subtitle">単語を入力して類語を調べてみましょう</div>
+            </div>
+            
+            <div class="suggestions">
+                <div class="suggestions-title">おすすめの単語</div>
+                <div class="suggestion-tags">
+                    <button class="suggestion-tag" onclick="searchWord('美しい')">美しい</button>
+                    <button class="suggestion-tag" onclick="searchWord('大きい')">大きい</button>
+                    <button class="suggestion-tag" onclick="searchWord('速い')">速い</button>
+                    <button class="suggestion-tag" onclick="searchWord('赤い')">赤い</button>
+                    <button class="suggestion-tag" onclick="searchWord('犬')">犬</button>
+                    <button class="suggestion-tag" onclick="searchWord('車')">車</button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="safe-area-bottom"></div>
+        
+        <!-- PWAインストールバナー -->
+        <div class="pwa-install-banner" id="installBanner">
+            <span>📱 ホーム画面に追加してアプリとして使用</span>
+            <button class="pwa-install-button" onclick="installPWA()">追加</button>
+        </div>
+    </div>
+
+    <script>
+        // API設定
+        const API_CONFIG = {
+            url: 'https://ojvymcjokldgqlugqdfk.supabase.co/rest/v1/rpc/dictionary_api',
+            key: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im9qdnltY2pva2xkZ3FsdWdxZGZrIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc1MTc4NDAwOCwiZXhwIjoyMDY3MzYwMDA4fQ.fhz0_bSmZCnB8q-NSmY6JIdxDFxEh1mamCkv3PcSrqw'
+        };
+
+        // DOM要素
+        const searchInput = document.getElementById('searchInput');
+        const content = document.getElementById('content');
+        const installBanner = document.getElementById('installBanner');
+
+        // PWA関連
+        let deferredPrompt;
+
+        // 検索履歴
+        let searchHistory = [];
+
+        // 検索入力のイベントリスナー
+        searchInput.addEventListener('input', debounce(handleSearch, 300));
+        searchInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                handleSearch();
+            }
+        });
+
+        // デバウンス関数
+        function debounce(func, wait) {
+            let timeout;
+            return function executedFunction(...args) {
+                const later = () => {
+                    clearTimeout(timeout);
+                    func(...args);
+                };
+                clearTimeout(timeout);
+                timeout = setTimeout(later, wait);
+            };
+        }
+
+        // 検索処理
+        async function handleSearch() {
+            const query = searchInput.value.trim();
+            
+            if (!query) {
+                showEmptyState();
+                return;
+            }
+
+            showLoading();
+            
+            try {
+                const result = await callAPI(query, 'synonyms');
+                displayResults(result, query);
+                addToHistory(query);
+            } catch (error) {
+                showError(error.message);
+            }
+        }
+
+        // API呼び出し
+        async function callAPI(word, type) {
+            const response = await fetch(API_CONFIG.url, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'apikey': API_CONFIG.key,
+                    'Authorization': `Bearer ${API_CONFIG.key}`
+                },
+                body: JSON.stringify({
+                    word_input: word,
+                    search_type: type,
+                    result_limit: 50
+                })
+            });
+
+            if (!response.ok) {
+                throw new Error(`ネットワークエラー: ${response.status}`);
+            }
+
+            return await response.json();
+        }
+
+        // 結果表示
+        function displayResults(result, query) {
+            if (result.error) {
+                showError(result.error);
+                return;
+            }
+
+            if (!result.found || !result.synonyms || result.synonyms.length === 0) {
+                showNoResults(query);
+                return;
+            }
+
+            // 日本語と英語に分類
+            const japaneseWords = [];
+            const englishWords = [];
+
+            result.synonyms.forEach(word => {
+                if (isJapanese(word)) {
+                    japaneseWords.push(word);
+                } else {
+                    englishWords.push(word);
+                }
+            });
+
+            let html = `
+                <div class="result-section">
+                    <div class="word-header">
+                        <div class="searched-word">${result.word}</div>
+                        <div class="word-count">${result.count}個の類語</div>
+                    </div>
+            `;
+
+            // 日本語類語（先に表示）
+            if (japaneseWords.length > 0) {
+                html += `
+                    <div class="language-section">
+                        <div class="language-title">
+                            <span class="language-flag">🇯🇵</span>
+                            日本語
+                        </div>
+                        <div class="words-grid">
+                            ${japaneseWords.map(word => 
+                                `<button class="word-tag" onclick="searchWord('${word}')">${word}</button>`
+                            ).join('')}
+                        </div>
+                    </div>
+                `;
+            }
+
+            // 英語類語（後に表示）
+            if (englishWords.length > 0) {
+                html += `
+                    <div class="language-section">
+                        <div class="language-title">
+                            <span class="language-flag">🇺🇸</span>
+                            English
+                        </div>
+                        <div class="words-grid">
+                            ${englishWords.map(word => 
+                                `<button class="word-tag" onclick="searchWord('${word}')">${word}</button>`
+                            ).join('')}
+                        </div>
+                    </div>
+                `;
+            }
+
+            html += `</div>`;
+            content.innerHTML = html;
+        }
+
+        // 日本語判定
+        function isJapanese(text) {
+            return /[\u3040-\u309F\u30A0-\u30FF\u4E00-\u9FAF]/.test(text);
+        }
+
+        // 単語検索（タップ時）
+        function searchWord(word) {
+            searchInput.value = word;
+            handleSearch();
+            searchInput.focus();
+        }
+
+        // ローディング表示
+        function showLoading() {
+            content.innerHTML = `
+                <div class="loading">
+                    <div class="loading-spinner"></div>
+                    <div>検索中...</div>
+                </div>
+            `;
+        }
+
+        // 空の状態表示
+        function showEmptyState() {
+            content.innerHTML = `
+                <div class="empty-state">
+                    <div class="empty-icon">📚</div>
+                    <div class="empty-title">類語を検索</div>
+                    <div class="empty-subtitle">単語を入力して類語を調べてみましょう</div>
+                </div>
+                
+                <div class="suggestions">
+                    <div class="suggestions-title">おすすめの単語</div>
+                    <div class="suggestion-tags">
+                        <button class="suggestion-tag" onclick="searchWord('美しい')">美しい</button>
+                        <button class="suggestion-tag" onclick="searchWord('大きい')">大きい</button>
+                        <button class="suggestion-tag" onclick="searchWord('速い')">速い</button>
+                        <button class="suggestion-tag" onclick="searchWord('赤い')">赤い</button>
+                        <button class="suggestion-tag" onclick="searchWord('犬')">犬</button>
+                        <button class="suggestion-tag" onclick="searchWord('車')">車</button>
+                    </div>
+                </div>
+            `;
+        }
+
+        // 結果なし表示
+        function showNoResults(query) {
+            content.innerHTML = `
+                <div class="empty-state">
+                    <div class="empty-icon">🤔</div>
+                    <div class="empty-title">類語が見つかりません</div>
+                    <div class="empty-subtitle">「${query}」の類語は見つかりませんでした</div>
+                </div>
+                
+                <div class="suggestions">
+                    <div class="suggestions-title">他の単語を試してみる</div>
+                    <div class="suggestion-tags">
+                        <button class="suggestion-tag" onclick="searchWord('美しい')">美しい</button>
+                        <button class="suggestion-tag" onclick="searchWord('大きい')">大きい</button>
+                        <button class="suggestion-tag" onclick="searchWord('速い')">速い</button>
+                        <button class="suggestion-tag" onclick="searchWord('犬')">犬</button>
+                    </div>
+                </div>
+            `;
+        }
+
+        // エラー表示
+        function showError(message) {
+            content.innerHTML = `
+                <div class="error-state">
+                    <div class="error-title">エラーが発生しました</div>
+                    <div class="error-message">${message}</div>
+                </div>
+                
+                <div class="suggestions">
+                    <div class="suggestions-title">もう一度お試しください</div>
+                    <div class="suggestion-tags">
+                        <button class="suggestion-tag" onclick="handleSearch()">再試行</button>
+                    </div>
+                </div>
+            `;
+        }
+
+        // 検索履歴に追加
+        function addToHistory(word) {
+            if (!searchHistory.includes(word)) {
+                searchHistory.unshift(word);
+                if (searchHistory.length > 10) {
+                    searchHistory.pop();
+                }
+                localStorage.setItem('searchHistory', JSON.stringify(searchHistory));
+            }
+        }
+
+        // 検索履歴読み込み
+        function loadHistory() {
+            const saved = localStorage.getItem('searchHistory');
+            if (saved) {
+                searchHistory = JSON.parse(saved);
+            }
+        }
+
+        // PWA インストール関連
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredPrompt = e;
+            
+            // インストールバナーを表示
+            setTimeout(() => {
+                installBanner.classList.add('show');
+            }, 3000);
+        });
+
+        function installPWA() {
+            if (deferredPrompt) {
+                deferredPrompt.prompt();
+                deferredPrompt.userChoice.then((choiceResult) => {
+                    if (choiceResult.outcome === 'accepted') {
+                        console.log('PWA installed');
+                    }
+                    deferredPrompt = null;
+                    installBanner.classList.remove('show');
+                });
+            }
+        }
+
+        // インライン Service Worker 登録
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                // Service Worker をインライン登録
+                const swCode = `
+                    const CACHE_NAME = 'thesaurus-pwa-v1';
+                    const urlsToCache = ['./', './index.html'];
+                    
+                    self.addEventListener('install', (event) => {
+                        event.waitUntil(
+                            caches.open(CACHE_NAME)
+                                .then((cache) => cache.addAll(urlsToCache))
+                        );
+                    });
+                    
+                    self.addEventListener('fetch', (event) => {
+                        if (event.request.url.includes('supabase.co')) {
+                            event.respondWith(fetch(event.request));
+                            return;
+                        }
+                        
+                        event.respondWith(
+                            caches.match(event.request)
+                                .then((response) => response || fetch(event.request))
+                        );
+                    });
+                `;
+                
+                const blob = new Blob([swCode], { type: 'application/javascript' });
+                const swUrl = URL.createObjectURL(blob);
+                
+                navigator.serviceWorker.register(swUrl)
+                    .then((registration) => {
+                        console.log('SW registered: ', registration);
+                    })
+                    .catch((registrationError) => {
+                        console.log('SW registration failed: ', registrationError);
+                    });
+            });
+        }
+
+        // インライン Web App Manifest 登録
+        const manifestData = {
+            name: "類語辞典 - 日本語WordNet",
+            short_name: "類語辞典",
+            description: "日本語と英語の類語を瞬時に検索できる辞典アプリ",
+            start_url: "./",
+            display: "standalone",
+            background_color: "#ffffff",
+            theme_color: "#007AFF",
+            orientation: "portrait-primary",
+            icons: [
+                {
+                    src: "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTkyIiBoZWlnaHQ9IjE5MiIgdmlld0JveD0iMCAwIDE5MiAxOTIiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CiAgPHJlY3Qgd2lkdGg9IjE5MiIgaGVpZ2h0PSIxOTIiIHJ4PSIyNCIgZmlsbD0iIzAwN0FGRiIvPgogIDx0ZXh0IHg9Ijk2IiB5PSIxMjAiIGZvbnQtZmFtaWx5PSItYXBwbGUtc3lzdGVtLCBzYW5zLXNlcmlmIiBmb250LXNpemU9IjgwIiBmb250LXdlaWdodD0iNjAwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSJ3aGl0ZSI+6L6eLyIsInR5cGUiOiJhcHBsaWNhdGlvbi92bmQuYW50LnJlYWN0In0=",
+                    sizes: "192x192",
+                    type: "image/svg+xml",
+                    purpose: "any maskable"
+                }
+            ],
+            categories: ["education", "reference", "productivity"],
+            lang: "ja"
+        };
+
+        const manifestBlob = new Blob([JSON.stringify(manifestData)], { type: 'application/json' });
+        const manifestUrl = URL.createObjectURL(manifestBlob);
+        
+        const manifestLink = document.createElement('link');
+        manifestLink.rel = 'manifest';
+        manifestLink.href = manifestUrl;
+        document.head.appendChild(manifestLink);
+
+        // 初期化
+        document.addEventListener('DOMContentLoaded', () => {
+            loadHistory();
+            searchInput.focus();
+        });
+    </script>
+</body>
+</html>
+        
